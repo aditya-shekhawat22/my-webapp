@@ -26,3 +26,12 @@ jobs:
             docker build -t my-todo-app .
             docker run -d -p 80:80 --name my-todo-app my-todo-app
             echo "✓ Deployment successful at $(date)"
+      
+      - name: Send Deployment Marker to New Relic
+        uses: newrelic/deployment-marker-action@v1
+        with:
+          apiKey: ${{ secrets.NEWRELIC_API_KEY }}
+          accountId: ${{ secrets.NEWRELIC_ACCOUNT_ID }}
+          version: ${{ github.sha }}
+          user: ${{ github.actor }}
+          description: "Deployed from GitHub Actions"
