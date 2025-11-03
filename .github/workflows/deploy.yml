@@ -21,14 +21,8 @@ jobs:
           script: |
             cd /home/ec2-user/my-webapp
             git pull origin main
-            docker-compose down
-            docker-compose up -d
+            docker stop my-todo-app || true
+            docker rm my-todo-app || true
+            docker build -t my-todo-app .
+            docker run -d -p 80:80 --name my-todo-app my-todo-app
             echo "✓ Deployment successful at $(date)"
-      
-      - name: Send deployment marker to New Relic
-        uses: newrelic/deployment-marker-action@v1
-        with:
-          apiKey: ${{ secrets.NEWRELIC_API_KEY }}
-          entityGuid: ${{ secrets.NEWRELIC_ENTITY_GUID }}
-          version: ${{ github.sha }}
-          user: ${{ github.actor }}
