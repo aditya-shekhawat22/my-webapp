@@ -24,14 +24,9 @@ jobs:
             docker stop my-todo-app || true
             docker rm my-todo-app || true
             docker build -t my-todo-app .
-            docker run -d -p 80:80 --name my-todo-app my-todo-app
-            echo "✓ Deployment successful at $(date)"
-      
-      - name: Send Deployment Marker to New Relic
-        uses: newrelic/deployment-marker-action@v1
-        with:
-          apiKey: ${{ secrets.NEWRELIC_API_KEY }}
-          accountId: ${{ secrets.NEWRELIC_ACCOUNT_ID }}
-          version: ${{ github.sha }}
-          user: ${{ github.actor }}
-          description: "Deployed from GitHub Actions"
+            docker run -d -p 80:80 \
+              -e NEW_RELIC_LICENSE_KEY="${{ secrets.NEWRELIC_LICENSE_KEY }}" \
+              -e NEW_RELIC_APP_NAME="Todo App" \
+              -e NEW_RELIC_LOG="stdout" \
+              --name my-todo-app my-todo-app
+            echo "✓ Deployment successful with New Relic monitoring"
